@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 import { Command } from "commander";
+import { registerEventsCommands } from "@hasna/events/commander";
 import { App } from "./components/App.js";
 import { registerBrainsCommand } from "./brains.js";
 import { registerProfileCommands } from "./commands/profile.js";
@@ -10,13 +11,15 @@ import { registerHealthCommand } from "./commands/health.js";
 import { registerContextCommands } from "./commands/context.js";
 import { registerMiscCommands } from "./commands/misc.js";
 import { registerExtractCommand } from "./commands/extract.js";
+import { registerStorageCommands } from "./commands/storage.js";
+import { PACKAGE_VERSION } from "../version.js";
 
 const program = new Command();
 
 program
   .name("styles")
   .description("Open Styles — design style management for AI coding agents")
-  .version("0.0.1");
+  .version(PACKAGE_VERSION);
 
 // Register all command groups from separate modules
 registerMiscCommands(program);
@@ -28,5 +31,8 @@ registerTemplateCommands(program);
 registerKitsCommands(program);
 registerExtractCommand(program);
 registerBrainsCommand(program);
+registerStorageCommands(program);
+registerEventsCommands(program, { source: "styles" });
+
 
 program.parse(process.argv);

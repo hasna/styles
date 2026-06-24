@@ -136,15 +136,16 @@ describe("STYLES catalog", () => {
   });
 
   test("all categories are valid", () => {
+    const categories: readonly string[] = CATEGORIES;
     for (const style of STYLES) {
-      expect(CATEGORIES).toContain(style.category);
+      expect(categories).toContain(style.category);
     }
   });
 
   test("all names are kebab-case lowercase", () => {
     for (const name of ALL_STYLE_NAMES) {
-      expect(name).toBe(name.toLowerCase());
-      expect(name).not.toContain(" ");
+      expect(name === name.toLowerCase()).toBe(true);
+      expect(name.includes(" ")).toBe(false);
     }
   });
 

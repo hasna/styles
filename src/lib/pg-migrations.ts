@@ -1,10 +1,13 @@
 /**
- * PostgreSQL migrations for open-styles cloud sync.
+ * PostgreSQL migrations for open-styles remote storage.
  *
  * Equivalent of the SQLite schema in db.ts, translated for PostgreSQL.
  * Each element is a standalone SQL string that must be executed in order.
  */
 export const PG_MIGRATIONS: string[] = [
+  // Migration 0: UUID helper for generated feedback rows
+  `CREATE EXTENSION IF NOT EXISTS pgcrypto`,
+
   // Migration 1: Full schema
   `
   CREATE TABLE IF NOT EXISTS style_profiles (
