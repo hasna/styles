@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
-import { Command } from "commander";
 import { registerEventsCommands } from "@hasna/events/commander";
+import { Command } from "commander";
 import { App } from "./components/App.js";
 import { registerBrainsCommand } from "./brains.js";
 import { registerProfileCommands } from "./commands/profile.js";
@@ -33,6 +33,5 @@ registerExtractCommand(program);
 registerBrainsCommand(program);
 registerStorageCommands(program);
 registerEventsCommands(program, { source: "styles" });
-
 
 program.parse(process.argv);

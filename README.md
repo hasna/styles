@@ -49,7 +49,21 @@ styles list --json
 styles-mcp
 ```
 
-28 tools available.
+MCP tools are available for style, health, context, extraction, presence, and
+storage operations.
+
+## HTTP mode
+
+Shared Streamable HTTP transport for multi-agent sessions (binds localhost only):
+
+```bash
+styles-mcp --http
+# or: MCP_HTTP=1 styles-mcp
+# port: --port 8837  >  MCP_HTTP_PORT  >  8837 (default)
+```
+
+- Health: `GET http://127.0.0.1:8837/health`
+- MCP: `http://127.0.0.1:8837/mcp`
 
 ## Storage
 
