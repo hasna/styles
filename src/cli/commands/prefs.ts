@@ -4,8 +4,6 @@ import type { Command } from "commander";
 import { formatTable, jsonOut, pageHint, pageItems } from "../../lib/format.js";
 import { getPref, setPref, listPrefs } from "../../lib/preferences.js";
 
-const isTTY = (process.stdout.isTTY ?? false) && (process.stdin.isTTY ?? false);
-
 export function registerPrefsCommands(program: Command) {
   const prefsCmd = program.command("prefs").description("Manage preferences");
 
@@ -28,23 +26,14 @@ export function registerPrefsCommands(program: Command) {
         return;
       }
 
-      if (!isTTY || opts.limit || opts.cursor) {
-        const page = pageItems(prefs, { limit: opts.limit, cursor: opts.cursor, defaultLimit: 20, maxLimit: 100 });
-        console.log(chalk.bold(`Preferences (${prefs.length})`));
-        console.log(formatTable(page.items, [
-          { header: "Key", value: (p) => p.key, maxWidth: 30 },
-          { header: "Scope", value: (p) => p.scope, maxWidth: 10 },
-          { header: "Value", value: (p) => p.value, maxWidth: 72 },
-        ]));
-        console.log(chalk.dim(pageHint(page, "use `styles prefs get <key>` for one value")));
-        return;
-      }
-
-      for (const p of prefs) {
-        console.log(
-          `  ${chalk.cyan(p.key.padEnd(30))} ${chalk.dim(p.scope.padEnd(10))} ${p.value}`
-        );
-      }
+      const page = pageItems(prefs, { limit: opts.limit, cursor: opts.cursor, defaultLimit: 20, maxLimit: 100 });
+      console.log(chalk.bold(`Preferences (${prefs.length})`));
+      console.log(formatTable(page.items, [
+        { header: "Key", value: (p) => p.key, maxWidth: 30 },
+        { header: "Scope", value: (p) => p.scope, maxWidth: 10 },
+        { header: "Value", value: (p) => p.value, maxWidth: 72 },
+      ]));
+      console.log(chalk.dim(pageHint(page, "use `styles prefs get <key>` for one value")));
     });
 
   prefsCmd

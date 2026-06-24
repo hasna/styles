@@ -277,6 +277,23 @@ export function registerStyleTools(server: McpServer) {
 
   // Resources
   server.resource(
+    "styles-registry-summary",
+    "styles://registry/summary",
+    { description: "Compact styles registry summary as JSON", mimeType: "application/json" },
+    async () => ({
+      contents: [{
+        uri: "styles://registry/summary",
+        mimeType: "application/json",
+        text: prettyJson({
+          styles: STYLES.map((style) => summarizeStyle(style)),
+          total: STYLES.length,
+          hint: "Use styles://registry for the full registry or get_style_info include_style_md=true for STYLE.md.",
+        }),
+      }],
+    })
+  );
+
+  server.resource(
     "styles-registry",
     "styles://registry",
     { description: "Full styles registry as JSON", mimeType: "application/json" },
@@ -286,6 +303,21 @@ export function registerStyleTools(server: McpServer) {
   );
 
   import("@modelcontextprotocol/sdk/server/mcp.js").then(({ ResourceTemplate }) => {
+    server.resource(
+      "style-summary-by-name",
+      new ResourceTemplate("styles://summary/{name}", { list: undefined }),
+      { description: "Compact individual style metadata", mimeType: "application/json" },
+      async (uri, variables) => {
+        const variable = variables.name;
+        const name = Array.isArray(variable) ? variable[0] : variable;
+        const style = getStyle(name);
+        if (!style) {
+          return { contents: [{ uri: uri.toString(), mimeType: "application/json", text: mcpError("STYLE_NOT_FOUND", `Style not found: "${name}"`) }] };
+        }
+        return { contents: [{ uri: uri.toString(), mimeType: "application/json", text: prettyJson(summarizeStyle(style, true)) }] };
+      }
+    );
+
     server.resource(
       "style-by-name",
       new ResourceTemplate("styles://{name}", { list: undefined }),

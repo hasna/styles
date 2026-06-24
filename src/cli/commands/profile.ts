@@ -9,8 +9,6 @@ import {
   deleteProfile,
 } from "../../lib/profiles.js";
 
-const isTTY = (process.stdout.isTTY ?? false) && (process.stdin.isTTY ?? false);
-
 export function registerProfileCommands(program: Command) {
   const profileCmd = program.command("profile").description("Manage style profiles");
 
@@ -32,26 +30,16 @@ export function registerProfileCommands(program: Command) {
         return;
       }
 
-      if (!isTTY || opts.limit || opts.cursor || opts.verbose) {
-        const page = pageItems(profiles, { limit: opts.limit, cursor: opts.cursor, defaultLimit: 20, maxLimit: 100 });
-        console.log(chalk.bold(`Custom Profiles (${profiles.length})`));
-        console.log(formatTable(page.items, [
-          { header: "ID", value: (p) => p.id.slice(0, 8), maxWidth: 10 },
-          { header: "Name", value: (p) => p.name, maxWidth: 24 },
-          { header: "Category", value: (p) => p.category, maxWidth: 18 },
-          { header: "Display", value: (p) => p.displayName, maxWidth: 28 },
-          ...(opts.verbose ? [{ header: "Description", value: (p: typeof profiles[number]) => p.description, maxWidth: 72 }] : []),
-        ]));
-        console.log(chalk.dim(pageHint(page, "use `styles profile get <id-or-name>` for details")));
-        return;
-      }
-
-      console.log(chalk.bold("Custom Profiles:"));
-      for (const p of profiles) {
-        console.log(
-          `  ${chalk.cyan(p.name.padEnd(20))} ${chalk.dim(p.category.padEnd(16))} ${p.displayName}`
-        );
-      }
+      const page = pageItems(profiles, { limit: opts.limit, cursor: opts.cursor, defaultLimit: 20, maxLimit: 100 });
+      console.log(chalk.bold(`Custom Profiles (${profiles.length})`));
+      console.log(formatTable(page.items, [
+        { header: "ID", value: (p) => p.id.slice(0, 8), maxWidth: 10 },
+        { header: "Name", value: (p) => p.name, maxWidth: 24 },
+        { header: "Category", value: (p) => p.category, maxWidth: 18 },
+        { header: "Display", value: (p) => p.displayName, maxWidth: 28 },
+        ...(opts.verbose ? [{ header: "Description", value: (p: typeof profiles[number]) => p.description, maxWidth: 72 }] : []),
+      ]));
+      console.log(chalk.dim(pageHint(page, "use `styles profile get <id-or-name>` for details")));
     });
 
   profileCmd

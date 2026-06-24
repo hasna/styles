@@ -64,18 +64,24 @@ export function registerContextTools(server: McpServer) {
       project_path: z.string().optional().describe("Absolute project path for project-scoped prefs"),
       limit: z.number().int().positive().optional().describe("Maximum preferences to return in compact output (default: 20)"),
       cursor: z.number().int().nonnegative().optional().describe("Zero-based pagination offset"),
+      verbose: z.boolean().optional().describe("Return full, untruncated preference values"),
     },
-    async ({ project_path, limit, cursor }) => {
+    async ({ project_path, limit, cursor, verbose }) => {
       const projectPath = project_path ? resolve(project_path) : undefined;
       const prefs = listPrefs(projectPath);
       const page = pageItems(prefs, { limit, cursor, defaultLimit: 20, maxLimit: 100 });
       return { content: [{ type: "text", text: prettyJson({
-        preferences: page.items.map((pref) => ({ ...pref, value: truncateText(pref.value, 120) })),
+        preferences: page.items.map((pref) => ({
+          ...pref,
+          value: verbose ? pref.value : truncateText(pref.value, 120),
+        })),
         total: page.total,
         limit: page.limit,
         cursor: page.cursor,
         nextCursor: page.nextCursor,
-        hint: "Use set_preference to change a value. Values are truncated in compact output.",
+        hint: verbose
+          ? "Full preference values included because verbose=true."
+          : "Values are truncated in compact output. Pass verbose=true for full values.",
       }) }] };
     }
   );

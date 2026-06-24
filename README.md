@@ -52,6 +52,15 @@ styles-mcp
 MCP tools are available for style, health, context, extraction, presence, and
 storage operations.
 
+MCP tools also use compact defaults. List/search/history-style tools return
+counts, bounded pages, truncated long text, and `nextCursor` when there is more
+to fetch. Use `verbose: true`, `include_style_md: true`, or `include_code: true`
+only when an agent needs the larger detail payload.
+
+Compact resources are available at `styles://registry/summary` and
+`styles://summary/{name}`. The existing `styles://registry` and
+`styles://{name}` resources remain full-detail compatibility paths.
+
 ## HTTP mode
 
 Shared Streamable HTTP transport for multi-agent sessions (binds localhost only):

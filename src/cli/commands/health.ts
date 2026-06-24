@@ -142,21 +142,12 @@ export function registerHealthCommand(program: Command) {
         return;
       }
 
-      if (!isTTY) {
-        writeFileViolations(filePath, violations, opts.limit);
-        if (violations.length > 0) process.exit(1);
-        return;
-      }
-
       if (violations.length === 0) {
         console.log(chalk.green(`✔ ${file}: No violations`));
         return;
       }
 
-      console.log(chalk.yellow(`${file}: ${violations.length} violation(s)`));
-      for (const v of violations) {
-        console.log(`  [${severityColor(v.severity)}] ${chalk.dim(v.rule)}: ${v.message}`);
-      }
+      writeFileViolations(filePath, violations, opts.limit);
       process.exit(1);
     });
 
@@ -288,35 +279,12 @@ export function registerHealthCommand(program: Command) {
 
       if (opts.json) { jsonOut(result); return; }
 
-      if (!isTTY) {
-        writeFixSummary(file, fixes, applied, opts.limit);
-        return;
-      }
-
       if (fixes.length === 0) {
         console.log(chalk.green(`✔ ${file}: No violations to fix`));
         return;
       }
 
-      console.log(chalk.bold(`\n${file}: ${fixes.length} fix suggestion(s)\n`));
-      for (const fix of fixes) {
-        const fixable = fix.autoFixable ? chalk.green("[auto-fixable]") : chalk.dim("[manual]");
-        console.log(`  Line ${chalk.bold(String(fix.line))} ${fixable} ${chalk.dim(fix.rule)}`);
-        console.log(`    ${chalk.dim("Current:")}    ${fix.current.trim()}`);
-        console.log(`    ${chalk.dim("Suggestion:")} ${fix.suggestion}`);
-        if (fix.autoFixable && fix.fixedLine) {
-          console.log(`    ${chalk.dim("Fixed line:")} ${fix.fixedLine.trim()}`);
-        }
-        console.log();
-      }
-
-      if (opts.apply) {
-        if (applied > 0) console.log(chalk.green(`✔ Applied ${applied} auto-fix(es) to ${file}`));
-        else console.log(chalk.dim("No auto-fixable issues found to apply."));
-      } else {
-        const autoCount = fixes.filter((f) => f.autoFixable).length;
-        if (autoCount > 0) console.log(chalk.dim(`Tip: Run with --apply to auto-fix ${autoCount} fixable issue(s).`));
-      }
+      writeFixSummary(file, fixes, applied, opts.limit);
     });
 }
 

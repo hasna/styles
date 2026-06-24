@@ -17,9 +17,10 @@ export function registerHealthTools(server: McpServer) {
       project_path: z.string().describe("Absolute project path to scan"),
       use_ai: z.boolean().optional().describe("Use Cerebras AI for deeper analysis (requires CEREBRAS_API_KEY)"),
       limit: z.number().int().positive().optional().describe("Maximum violations to return in compact output (default: 10)"),
+      cursor: z.number().int().nonnegative().optional().describe("Zero-based pagination offset for compact violation output"),
       verbose: z.boolean().optional().describe("Return the full health check result"),
     },
-    async ({ project_path, use_ai, limit, verbose }) => {
+    async ({ project_path, use_ai, limit, cursor, verbose }) => {
       const projectPath = resolve(project_path);
       const result = await runHealthCheck(projectPath);
 
@@ -35,7 +36,7 @@ export function registerHealthTools(server: McpServer) {
         }
       }
 
-      return { content: [{ type: "text", text: prettyJson(verbose ? result : summarizeHealthResult(result, projectPath, limit)) }] };
+      return { content: [{ type: "text", text: prettyJson(verbose ? result : summarizeHealthResult(result, projectPath, limit, cursor)) }] };
     }
   );
 
@@ -153,8 +154,9 @@ function summarizeHealthResult(
   result: Awaited<ReturnType<typeof runHealthCheck>>,
   projectPath: string,
   limit = 10,
+  cursor = 0,
 ) {
-  const page = pageItems(result.violations, { limit, defaultLimit: 10, maxLimit: 100 });
+  const page = pageItems(result.violations, { limit, cursor, defaultLimit: 10, maxLimit: 100 });
   return {
     projectPath,
     status: result.status,
@@ -169,6 +171,7 @@ function summarizeHealthResult(
       line: violation.line,
     })),
     limit: page.limit,
+    cursor: page.cursor,
     nextCursor: page.nextCursor,
     hint: "Pass verbose=true for full violation objects.",
   };

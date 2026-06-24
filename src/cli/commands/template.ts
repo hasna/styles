@@ -4,8 +4,6 @@ import type { Command } from "commander";
 import { formatTable, jsonOut, pageHint, pageItems } from "../../lib/format.js";
 import { listTemplates, applyTemplate } from "../../lib/templates.js";
 
-const isTTY = (process.stdout.isTTY ?? false) && (process.stdin.isTTY ?? false);
-
 export function registerTemplateCommands(program: Command) {
   const templateCmd = program.command("template").description("Manage style templates");
 
@@ -28,23 +26,16 @@ export function registerTemplateCommands(program: Command) {
         return;
       }
 
-      if (!isTTY || opts.limit || opts.cursor || opts.verbose) {
-        const page = pageItems(templates, { limit: opts.limit, cursor: opts.cursor, defaultLimit: 20, maxLimit: 100 });
-        console.log(chalk.bold(`Templates (${templates.length})`));
-        console.log(formatTable(page.items, [
-          { header: "ID", value: (t) => t.id.slice(0, 8), maxWidth: 10 },
-          { header: "Name", value: (t) => t.name, maxWidth: 28 },
-          { header: "Profile", value: (t) => t.styleProfileId, maxWidth: 22 },
-          ...(opts.verbose ? [{ header: "Vars", value: (t: typeof templates[number]) => Object.keys(t.variables).length, maxWidth: 6 }] : []),
-          { header: "Description", value: (t) => t.description, maxWidth: opts.verbose ? 72 : 48 },
-        ]));
-        console.log(chalk.dim(pageHint(page, "use `styles template apply <id>` to apply")));
-        return;
-      }
-
-      for (const t of templates) {
-        console.log(`  ${chalk.cyan(t.id.slice(0, 8))}  ${t.name.padEnd(24)} ${chalk.dim(t.description)}`);
-      }
+      const page = pageItems(templates, { limit: opts.limit, cursor: opts.cursor, defaultLimit: 20, maxLimit: 100 });
+      console.log(chalk.bold(`Templates (${templates.length})`));
+      console.log(formatTable(page.items, [
+        { header: "ID", value: (t) => t.id.slice(0, 8), maxWidth: 10 },
+        { header: "Name", value: (t) => t.name, maxWidth: 28 },
+        { header: "Profile", value: (t) => t.styleProfileId, maxWidth: 22 },
+        ...(opts.verbose ? [{ header: "Vars", value: (t: typeof templates[number]) => Object.keys(t.variables).length, maxWidth: 6 }] : []),
+        { header: "Description", value: (t) => t.description, maxWidth: opts.verbose ? 72 : 48 },
+      ]));
+      console.log(chalk.dim(pageHint(page, "use `styles template apply <id>` to apply")));
     });
 
   templateCmd

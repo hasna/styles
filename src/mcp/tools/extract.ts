@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { extractStylesFromUrl, enrichTokensWithAi } from "../../lib/extractor.js";
+import { extractStylesFromUrl, enrichTokensWithAi, type AiEnrichment } from "../../lib/extractor.js";
 import { tokenizeStyles } from "../../lib/tokenizer.js";
 import { transform, type TransformFormat } from "../../lib/transformer.js";
 import { saveKit, getKit, listKits, deleteKit } from "../../lib/kits.js";
@@ -43,18 +43,20 @@ export function registerExtractTools(server: McpServer) {
           content: [{
             type: "text",
             text: prettyJson({
-              url, extractedAt: raw.extractedAt, enrichment,
+              url,
+              extractedAt: raw.extractedAt,
               summary: {
                 colors: tokens.colors.length,
                 namedColors: tokens.colors.filter(c => c.name).length,
-                fonts: tokens.typography.fontFamilies,
-                borderRadii: tokens.borderRadius,
+                fontCount: tokens.typography.fontFamilies.length,
+                fontSample: tokens.typography.fontFamilies.slice(0, 5),
+                borderRadiusCount: tokens.borderRadius.length,
+                borderRadiusSample: tokens.borderRadius.slice(0, 8),
                 shadows: tokens.shadows.length,
-                detectedStyle: enrichment?.detectedStyle,
-                suggestedName: enrichment?.suggestedName,
+                enrichment: summarizeEnrichment(enrichment),
               },
               ...(include_code || verbose ? { code: result.code } : {}),
-              ...(verbose ? { config: result.config, sampleColors: tokens.colors.slice(0, 10) } : {}),
+              ...(verbose ? { enrichment, config: result.config, sampleColors: tokens.colors.slice(0, 10) } : {}),
               kit: kit ? { id: kit.id, name: kit.name } : null,
               hint: include_code || verbose ? "Code included by request." : "Pass include_code=true for generated config or verbose=true for richer token details.",
             }),
@@ -183,4 +185,14 @@ export function registerExtractTools(server: McpServer) {
       }) }] };
     }
   );
+}
+
+function summarizeEnrichment(enrichment: AiEnrichment | null) {
+  if (!enrichment) return null;
+  return {
+    detectedStyle: enrichment.detectedStyle,
+    suggestedName: enrichment.suggestedName,
+    profileDescription: truncateText(enrichment.profileDescription, 160),
+    colorNameCount: Object.keys(enrichment.colorNames).length,
+  };
 }

@@ -22,23 +22,16 @@ export function registerKitsCommands(program: Command) {
       if (opts.json) { jsonOut(kits); return; }
       if (!kits.length) { console.log(chalk.dim("No kits saved yet. Run: styles extract <url> --save --name <name>")); return; }
 
-      if (!isTTY || opts.limit || opts.cursor || opts.verbose) {
-        const page = pageItems(kits, { limit: opts.limit, cursor: opts.cursor, defaultLimit: 20, maxLimit: 100 });
-        console.log(chalk.bold(`Style Kits (${kits.length})`));
-        console.log(formatTable(page.items, [
-          { header: "ID", value: (k) => k.id.slice(0, 8), maxWidth: 10 },
-          { header: "Name", value: (k) => k.name, maxWidth: 24 },
-          { header: "URL", value: (k) => k.url, maxWidth: 42 },
-          { header: "Tokens", value: compactKitTokenCounts, maxWidth: 24 },
-          ...(opts.verbose ? [{ header: "Tags", value: (k: StyleKit) => k.tags.join(", "), maxWidth: 36 }] : []),
-        ]));
-        console.log(chalk.dim(pageHint(page, "use `styles kits get <id>` for details")));
-        return;
-      }
-
-      for (const k of kits) {
-        console.log(`  ${chalk.cyan(k.id.slice(0, 8))}  ${chalk.bold(k.name)}  ${chalk.dim(k.url)}  ${chalk.dim(new Date(k.createdAt).toLocaleDateString())}`);
-      }
+      const page = pageItems(kits, { limit: opts.limit, cursor: opts.cursor, defaultLimit: 20, maxLimit: 100 });
+      console.log(chalk.bold(`Style Kits (${kits.length})`));
+      console.log(formatTable(page.items, [
+        { header: "ID", value: (k) => k.id.slice(0, 8), maxWidth: 10 },
+        { header: "Name", value: (k) => k.name, maxWidth: 24 },
+        { header: "URL", value: (k) => k.url, maxWidth: 42 },
+        { header: "Tokens", value: compactKitTokenCounts, maxWidth: 24 },
+        ...(opts.verbose ? [{ header: "Tags", value: (k: StyleKit) => k.tags.join(", "), maxWidth: 36 }] : []),
+      ]));
+      console.log(chalk.dim(pageHint(page, "use `styles kits get <id>` for details")));
     });
 
   kitsCmd
