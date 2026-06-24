@@ -25,10 +25,7 @@ import { saveKit, getKit, listKits, updateKit, deleteKit, kitToProfile } from ".
 import { auditColorContrast } from "../lib/a11y.js";
 import { diffTokens } from "../lib/diff.js";
 import { publishToFigma } from "../lib/figma.js";
-
-const pkg = JSON.parse(
-  readFileSync(join(dirname(fileURLToPath(import.meta.url)), "..", "..", "package.json"), "utf-8")
-);
+import { PACKAGE_VERSION } from "../version.js";
 
 // ── Port resolution ──────────────────────────────────────────────────────────
 
@@ -195,7 +192,7 @@ async function handleRequest(req: Request): Promise<Response> {
 
     // GET /api/version
     if (path === "/api/version" && method === "GET") {
-      return json({ version: pkg.version });
+      return json({ version: PACKAGE_VERSION });
     }
 
     // GET /api/styles

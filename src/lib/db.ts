@@ -1,4 +1,4 @@
-import { SqliteAdapter as Database } from "@hasna/cloud";
+import { Database } from "bun:sqlite";
 import { homedir } from "os";
 import { join, dirname } from "path";
 import { mkdirSync, existsSync, copyFileSync, readdirSync, statSync } from "fs";

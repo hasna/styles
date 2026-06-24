@@ -4,13 +4,15 @@ import { registerHealthTools } from "./tools/health.js";
 import { registerContextTools } from "./tools/context.js";
 import { registerExtractTools } from "./tools/extract.js";
 import { registerPresenceTools } from "./tools/presence.js";
+import { registerStorageTools } from "./tools/storage.js";
+import { PACKAGE_VERSION } from "../version.js";
 
 export const MCP_NAME = "styles";
 
 export function buildServer(): McpServer {
   const server = new McpServer({
     name: "open-styles",
-    version: "0.0.1",
+    version: PACKAGE_VERSION,
   });
 
   registerStyleTools(server);
@@ -18,6 +20,7 @@ export function buildServer(): McpServer {
   registerContextTools(server);
   registerExtractTools(server);
   registerPresenceTools(server);
+  registerStorageTools(server);
 
   return server;
 }

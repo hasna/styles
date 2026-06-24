@@ -1,6 +1,9 @@
 // ── Database ──────────────────────────────────────────────────────────────────
 export { getDb, initDb, DB_PATH } from "./lib/db.js";
 
+// ── Package metadata ─────────────────────────────────────────────────────────
+export { PACKAGE_VERSION } from "./version.js";
+
 // ── Registry ──────────────────────────────────────────────────────────────────
 export {
   STYLES,
@@ -201,3 +204,31 @@ export type { FigmaVariablesPayload, FigmaVariable } from "./lib/figma.js";
 
 // ── Screenshot extraction ─────────────────────────────────────────────────────
 export { extractStylesFromScreenshot, extractStylesFromFile } from "./lib/extractor.js";
+
+// ── Native storage sync ──────────────────────────────────────────────────────
+export {
+  STORAGE_TABLES,
+  getStorageDatabaseEnv,
+  getStorageDatabaseUrl,
+  getStorageMode,
+  getStorageS3Config,
+  getStorageS3Status,
+  getStorageStatus,
+  getSyncMetaAll,
+  runStorageMigrations,
+  storageArtifactsDownload,
+  storageArtifactsUpload,
+  storagePull,
+  storagePush,
+  storageSync,
+} from "./lib/storage-sync.js";
+export type {
+  ArtifactSyncResult,
+  StorageEnv,
+  StorageMode,
+  StorageS3Config,
+  StorageS3Status,
+  SyncMeta,
+  SyncResult,
+  SyncTableResult,
+} from "./lib/storage-sync.js";

@@ -11,6 +11,10 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./storage": {
+      "import": "./dist/storage.js",
+      "types": "./dist/storage.d.ts"
     }
   },
   "files": [
@@ -24,7 +28,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "clean": "rm -rf bin/ dist/",
-    "build": "bun run clean && bun build ./src/cli/index.tsx --outdir ./bin --target bun --external ink --external react --external chalk --external playwright && bun build ./src/mcp/index.ts --outfile ./bin/mcp.js --target bun --external playwright --external ink --external react --external react-devtools-core && bun build ./src/index.ts --outdir ./dist --target bun --external playwright && (tsc --emitDeclarationOnly --declaration --outDir dist || true) && for f in ./bin/index.js ./bin/mcp.js; do if [ -f \"$f\" ] && ! head -1 \"$f\" | grep -q '^#!'; then printf '#!/usr/bin/env bun\\n' | cat - \"$f\" > \"$f.tmp\" && mv \"$f.tmp\" \"$f\" && chmod +x \"$f\"; fi; done",
+    "build": "bun run clean && bun build ./src/cli/index.tsx --outdir ./bin --target bun --external ink --external react --external chalk --external playwright && bun build ./src/mcp/index.ts --outfile ./bin/mcp.js --target bun --external playwright --external ink --external react --external react-devtools-core && bun build ./src/index.ts ./src/storage.ts --outdir ./dist --target bun --external playwright && (tsc --emitDeclarationOnly --declaration --outDir dist || true) && for f in ./bin/index.js ./bin/mcp.js; do if [ -f \"$f\" ] && ! head -1 \"$f\" | grep -q '^#!'; then printf '#!/usr/bin/env bun\\n' | cat - \"$f\" > \"$f.tmp\" && mv \"$f.tmp\" \"$f\" && chmod +x \"$f\"; fi; done",
     "test": "bun test",
     "dev": "bun run ./src/cli/index.tsx",
     "dev:mcp": "bun --watch run ./src/mcp/index.ts",
@@ -54,11 +58,11 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/pg": "^8.15.6",
     "@types/react": "^18.2.0",
     "typescript": "^5"
   },
   "dependencies": {
-    "@hasna/cloud": "0.1.24",
     "@hasna/events": "^0.1.6",
     "@modelcontextprotocol/sdk": "^1.26.0",
     "chalk": "^5.3.0",
@@ -67,6 +71,7 @@
     "ink-select-input": "^6.0.0",
     "ink-spinner": "^5.0.0",
     "ink-text-input": "^6.0.0",
+    "pg": "^8.20.0",
     "playwright": "^1.58.2",
     "react": "^18.2.0",
     "zod": "^4.3.6"
